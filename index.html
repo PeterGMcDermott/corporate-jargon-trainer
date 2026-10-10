@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,650;7..72,800&display=swap" rel="stylesheet">
+  <title>Corporate Jargon Trainer</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper:#f4f1e8;
+      --surface:#fffdf7;
+      --ink:#18211f;
+      --muted:#53615e;
+      --line:#c8cec7;
+      --blue:#1e5eff;
+      --blue-dark:#1646bd;
+      --yellow:#f2c84b;
+      --mint:#b9e6ce;
+      --red:#d84a43;
+      --green:#16784d;
+      --shadow:0 12px 34px rgba(29,43,39,.10);
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --paper:#111715;
+        --surface:#18211e;
+        --ink:#f5f3eb;
+        --muted:#b1bdb8;
+        --line:#3b4844;
+        --blue:#7fa4ff;
+        --blue-dark:#a7bfff;
+        --yellow:#f4ca54;
+        --mint:#285f49;
+        --red:#ff8a82;
+        --green:#86dfb3;
+        --shadow:0 14px 36px rgba(0,0,0,.28);
+      }
+    }
+    *{box-sizing:border-box}
+    html{min-height:100%}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        linear-gradient(rgba(30,94,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30,94,255,.035) 1px, transparent 1px),
+        var(--paper);
+      background-size:28px 28px;
+      color:var(--ink);
+      font-family:"IBM Plex Sans",sans-serif;
+    }
+    button{font:inherit}
+    button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+    .app{max-width:1120px;margin:0 auto;padding:24px clamp(16px,4vw,42px) 60px}
+    .statusbar{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:20px;min-height:40px}
+    .stat{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--line);padding:8px 12px;border-radius:10px;font-weight:700;font-variant-numeric:tabular-nums}
+    .stat svg{width:18px;height:18px;stroke-width:2.2}
+    .xp-stat svg{color:var(--blue)}
+    .life-stat svg{color:var(--red)}
+    .ghost-button{border:0;background:transparent;color:var(--muted);padding:8px;font-weight:600;cursor:pointer;border-radius:8px}
+    .ghost-button:hover{background:var(--surface);color:var(--ink)}
+
+    .intro-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(310px,.75fr);gap:clamp(30px,6vw,76px);align-items:center;padding:clamp(24px,6vw,64px) 0 38px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;margin:0 0 18px;font-weight:700;color:var(--blue-dark);font-size:.87rem;letter-spacing:.02em}
+    .eyebrow::before{content:"";width:26px;height:3px;background:var(--yellow);border-radius:3px}
+    h1{font-family:"Literata",serif;font-size:clamp(2.55rem,7vw,5.4rem);line-height:.96;letter-spacing:-.055em;margin:0;max-width:760px}
+    .lead{font-size:clamp(1.05rem,2vw,1.25rem);line-height:1.58;color:var(--muted);max-width:610px;margin:24px 0 28px}
+    .primary{border:0;background:var(--blue);color:#fff;font-weight:700;padding:15px 22px;border-radius:10px;cursor:pointer;box-shadow:0 5px 0 var(--blue-dark);transition:transform .12s,box-shadow .12s;min-height:52px}
+    .primary:hover{transform:translateY(-1px);box-shadow:0 6px 0 var(--blue-dark)}
+    .primary:active{transform:translateY(4px);box-shadow:0 1px 0 var(--blue-dark)}
+    .primary[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none;transform:none}
+    .intro-note{margin:13px 0 0;color:var(--muted);font-size:.9rem}
+
+    .phrase-stack{position:relative;min-height:330px;display:grid;place-items:center}
+    .phrase-card{position:absolute;width:min(100%,340px);background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:24px;border-radius:8px}
+    .phrase-card:nth-child(1){transform:rotate(-7deg) translate(-16px,16px);opacity:.55}
+    .phrase-card:nth-child(2){transform:rotate(5deg) translate(12px,-6px);opacity:.75}
+    .phrase-card:nth-child(3){transform:rotate(-1deg)}
+    .phrase-card .label{font-size:.76rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}
+    .phrase-card blockquote{font-family:"Literata",serif;font-size:1.55rem;line-height:1.25;margin:18px 0 22px}
+    .translation{display:flex;gap:10px;align-items:flex-start;padding-top:16px;border-top:1px dashed var(--line);color:var(--muted);font-weight:500}
+    .translation svg{width:20px;min-width:20px;color:var(--green)}
+
+    .path-section{padding-top:34px;border-top:1px solid var(--line)}
+    .section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:24px}
+    h2{font-family:"Literata",serif;font-size:clamp(1.6rem,3vw,2.2rem);margin:0;letter-spacing:-.025em}
+    .section-head p{margin:0;color:var(--muted)}
+    .lesson-path{display:grid;grid-template-columns:repeat(5,1fr);gap:0;list-style:none;margin:0;padding:0;position:relative}
+    .lesson-path::before{content:"";position:absolute;top:27px;left:9%;right:9%;height:3px;background:var(--line);z-index:0}
+    .path-item{position:relative;z-index:1;text-align:center;padding:0 8px}
+    .node{width:56px;height:56px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;border:3px solid var(--line);background:var(--paper);color:var(--muted);font-weight:800;font-size:1.05rem}
+    .path-item.active .node{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 5px var(--surface)}
+    .path-item.complete .node{background:var(--mint);border-color:var(--green);color:var(--green)}
+    .path-item.locked{opacity:.58}
+    .path-name{font-weight:700;font-size:.9rem;line-height:1.25}
+    .path-meta{display:block;color:var(--muted);font-size:.76rem;margin-top:3px}
+
+    .lesson-shell{display:none;grid-template-columns:250px minmax(0,1fr);gap:40px;padding-top:24px}
+    .lesson-shell.visible{display:grid}
+    .rail{padding-top:10px}
+    .rail-title{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700;margin-bottom:14px}
+    .rail-list{display:flex;flex-direction:column;gap:8px}
+    .rail-item{display:flex;align-items:center;gap:11px;padding:10px;border-radius:8px;color:var(--muted);font-weight:600;font-size:.92rem}
+    .rail-item .mini-node{display:grid;place-items:center;width:30px;height:30px;min-width:30px;border:2px solid var(--line);border-radius:50%;font-size:.78rem}
+    .rail-item.current{background:var(--surface);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.05)}
+    .rail-item.current .mini-node{border-color:var(--blue);color:var(--blue)}
+    .rail-item.done .mini-node{border-color:var(--green);background:var(--mint);color:var(--green)}
+    .rail-item.locked{opacity:.45}
+
+    .lesson-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden;min-height:560px;display:flex;flex-direction:column}
+    .progress-wrap{height:6px;background:var(--line)}
+    .progress-bar{height:100%;width:0;background:var(--blue);transition:width .3s ease}
+    .lesson-inner{padding:clamp(24px,5vw,48px);display:flex;flex-direction:column;flex:1}
+    .question-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.82rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+    .question-tag{color:var(--blue-dark)}
+    .question-title{font-family:"Literata",serif;font-size:clamp(1.6rem,4vw,2.4rem);line-height:1.16;letter-spacing:-.03em;margin:28px 0 12px;max-width:720px}
+    .question-context{margin:0 0 28px;color:var(--muted);font-size:1rem;line-height:1.55;max-width:700px}
+    .memo{border-left:4px solid var(--yellow);background:var(--paper);padding:18px 20px;margin:4px 0 24px;font-family:"Literata",serif;font-size:1.08rem;line-height:1.55}
+    .options{display:grid;gap:12px;margin-top:auto}
+    .option{width:100%;text-align:left;border:2px solid var(--line);background:transparent;color:var(--ink);border-radius:9px;padding:16px 18px;cursor:pointer;font-weight:600;line-height:1.42;display:flex;gap:13px;align-items:flex-start;transition:border-color .15s,background .15s}
+    .option:hover{border-color:var(--blue)}
+    .option.selected{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 8%,transparent)}
+    .option.correct{border-color:var(--green);background:color-mix(in srgb,var(--green) 10%,transparent)}
+    .option.wrong{border-color:var(--red);background:color-mix(in srgb,var(--red) 9%,transparent)}
+    .option-key{display:grid;place-items:center;width:25px;height:25px;min-width:25px;border:1px solid var(--line);border-radius:5px;font-size:.76rem;color:var(--muted)}
+    .feedback{display:none;margin:24px calc(clamp(24px,5vw,48px) * -1) calc(clamp(24px,5vw,48px) * -1);padding:20px clamp(24px,5vw,48px);border-top:1px solid var(--line);background:var(--paper);align-items:center;gap:18px}
+    .feedback.visible{display:flex}
+    .feedback-icon{width:42px;height:42px;min-width:42px;border-radius:50%;display:grid;place-items:center;background:var(--mint);color:var(--green)}
+    .feedback-icon.bad{background:color-mix(in srgb,var(--red) 12%,var(--surface));color:var(--red)}
+    .feedback-icon svg{width:22px;height:22px}
+    .feedback-copy{flex:1}
+    .feedback-copy strong{display:block;font-family:"Literata",serif;font-size:1.08rem;margin-bottom:3px}
+    .feedback-copy span{color:var(--muted);font-size:.9rem;line-height:1.4}
+    .continue{min-width:120px}
+
+    .result{text-align:center;justify-content:center;align-items:center}
+    .result-badge{width:104px;height:104px;border-radius:50%;display:grid;place-items:center;background:var(--yellow);color:#20251f;margin-bottom:24px;border:8px solid color-mix(in srgb,var(--yellow) 35%,var(--surface));font-family:"Literata",serif;font-size:2rem;font-weight:800}
+    .result h2{font-size:clamp(2rem,5vw,3.2rem)}
+    .result p{color:var(--muted);font-size:1.05rem;line-height:1.55;max-width:560px;margin:14px auto 28px}
+    .result-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,520px);margin-bottom:28px}
+    .result-stat{background:var(--paper);padding:14px 10px;border-radius:8px}
+    .result-stat strong{display:block;font-size:1.25rem}
+    .result-stat span{color:var(--muted);font-size:.78rem}
+    .result-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+    .secondary{border:2px solid var(--line);background:transparent;color:var(--ink);font-weight:700;padding:13px 18px;border-radius:10px;cursor:pointer}
+    .secondary:hover{border-color:var(--blue)}
+
+    .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:var(--ink);color:var(--paper);padding:11px 16px;border-radius:8px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:10;box-shadow:var(--shadow)}
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    .hidden{display:none!important}
+
+    /* Masterclass curriculum */
+    .program-summary{display:grid;grid-template-columns:1.35fr repeat(3,1fr);gap:12px;margin:0 0 34px}
+    .summary-cell{background:var(--surface);border:1px solid var(--line);padding:17px 18px;border-radius:9px}
+    .summary-cell.primary-cell{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+    .summary-cell strong{display:block;font-family:"Literata",serif;font-size:1.4rem;line-height:1.1}
+    .summary-cell span{display:block;color:var(--muted);font-size:.78rem;margin-top:5px}
+    .primary-cell span{color:color-mix(in srgb,var(--paper) 70%,transparent)}
+    .level-group{padding:28px 0;border-top:1px solid var(--line)}
+    .level-group:first-child{padding-top:4px;border-top:0}
+    .level-head{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:16px;align-items:center;margin-bottom:17px}
+    .level-number{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:var(--paper);font-family:"Literata",serif;font-weight:800;font-size:1.15rem}
+    .level-head h3{font-family:"Literata",serif;font-size:1.34rem;margin:0}
+    .level-head p{color:var(--muted);margin:3px 0 0;font-size:.9rem}
+    .level-progress{font-weight:700;color:var(--muted);font-size:.82rem}
+    .unit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .unit-card{position:relative;text-align:left;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:18px;border-radius:9px;min-height:154px;cursor:pointer;display:flex;flex-direction:column;transition:border-color .15s,transform .15s}
+    .unit-card:hover:not(:disabled){border-color:var(--blue);transform:translateY(-2px)}
+    .unit-card:disabled{cursor:not-allowed;opacity:.52}
+    .unit-card.active{border:2px solid var(--blue);padding:17px;box-shadow:0 6px 20px color-mix(in srgb,var(--blue) 10%,transparent)}
+    .unit-card.complete{background:color-mix(in srgb,var(--mint) 28%,var(--surface));border-color:var(--green)}
+    .unit-top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+    .unit-icon{width:25px;height:25px;border:2px solid currentColor;border-radius:50%;display:grid;place-items:center}
+    .unit-icon svg{width:15px;height:15px}
+    .unit-card h4{font-family:"Literata",serif;font-size:1.08rem;line-height:1.2;margin:19px 0 7px}
+    .unit-card p{color:var(--muted);font-size:.83rem;line-height:1.42;margin:0}
+    .unit-foot{margin-top:auto;padding-top:14px;font-size:.75rem;color:var(--muted);font-weight:600}
+    .mastery-panel{display:none;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px;margin:0 0 34px}
+    .mastery-panel.visible{display:grid;grid-template-columns:240px minmax(0,1fr);gap:26px;align-items:center}
+    .mastery-score{display:flex;gap:15px;align-items:center}
+    .score-ring{width:74px;height:74px;border-radius:50%;display:grid;place-items:center;border:7px solid var(--yellow);font-family:"Literata",serif;font-size:1.35rem;font-weight:800}
+    .mastery-score strong{display:block;font-family:"Literata",serif;font-size:1.15rem}
+    .mastery-score span{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}
+    .skill-bars{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px}
+    .skill-row{display:grid;grid-template-columns:78px 1fr 32px;gap:10px;align-items:center;font-size:.78rem;font-weight:700}
+    .skill-track{height:7px;border-radius:8px;background:var(--line);overflow:hidden}
+    .skill-fill{height:100%;background:var(--blue);border-radius:8px}
+    .skill-value{text-align:right;color:var(--muted)}
+    .reference-section{margin-top:48px;padding-top:36px;border-top:1px solid var(--line)}
+    .reference-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .reference-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;margin:24px 0 17px}
+    .search-wrap{position:relative}
+    .search-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:19px;color:var(--muted)}
+    .search-input{width:100%;border:2px solid var(--line);background:var(--surface);color:var(--ink);padding:13px 14px 13px 43px;border-radius:9px;font:inherit}
+    .search-input:focus{outline:0;border-color:var(--blue)}
+    .filters{display:flex;gap:7px;flex-wrap:wrap}
+    .filter{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:8px 11px;border-radius:8px;font-weight:700;font-size:.78rem;cursor:pointer}
+    .filter.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+    .phrasebook{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .term-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 17px}
+    .term-card h4{font-family:"Literata",serif;margin:0 0 7px;font-size:1rem}
+    .term-card p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.45}
+    .term-card .better{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line);color:var(--ink)}
+    .term-card .better strong{color:var(--green)}
+    .empty-terms{grid-column:1/-1;color:var(--muted);padding:24px 0}
+    .streak-stat svg{color:var(--yellow)}
+    .capstone-mark{display:inline-flex;align-items:center;gap:6px;color:var(--blue-dark);font-weight:800}
+
+    @media(max-width:760px){
+      .app{padding-top:14px}
+      .statusbar{margin-bottom:6px}
+      .intro-grid{grid-template-columns:1fr;padding-top:24px;gap:24px}
+      .phrase-stack{min-height:270px;margin:0 18px}
+      .phrase-card{padding:20px}
+      .phrase-card blockquote{font-size:1.3rem}
+      .section-head{align-items:start;flex-direction:column;gap:6px}
+      .program-summary{grid-template-columns:1fr 1fr}.summary-cell.primary-cell{grid-column:1/-1}
+      .mastery-panel.visible{grid-template-columns:1fr}.skill-bars{grid-template-columns:1fr}
+      .level-head{grid-template-columns:46px minmax(0,1fr)}.level-progress{grid-column:2}
+      .unit-grid{grid-template-columns:1fr}.unit-card{min-height:136px}
+      .reference-tools{grid-template-columns:1fr}.phrasebook{grid-template-columns:1fr}
+      .lesson-path{grid-template-columns:1fr;gap:12px}
+      .lesson-path::before{top:24px;bottom:24px;left:24px;right:auto;width:3px;height:auto}
+      .path-item{text-align:left;display:grid;grid-template-columns:50px 1fr;gap:13px;align-items:center;padding:0}
+      .node{width:50px;height:50px;margin:0}
+      .path-item.active .node{box-shadow:0 0 0 4px var(--surface)}
+      .path-meta{display:inline;margin-left:6px}
+      .lesson-shell{grid-template-columns:1fr;padding-top:8px}
+      .rail{display:none}
+      .lesson-card{min-height:calc(100vh - 100px);border-radius:10px}
+      .lesson-inner{padding:24px 18px}
+      .question-title{margin-top:22px}
+      .feedback{margin:22px -18px -24px;padding:18px;display:none;grid-template-columns:42px 1fr}
+      .feedback.visible{display:grid}
+      .continue{grid-column:1/-1;width:100%}
+      .result-stats{gap:7px}
+      .result-stat{padding:12px 6px}
+    }
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="statusbar" aria-label="Session status">
+      <div class="stat xp-stat" title="Experience points">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 2.5l2.7 5.6 6.2.9-4.5 4.4 1.1 6.1-5.5-2.9-5.5 2.9 1.1-6.1L3.1 9l6.2-.9L12 2.5z"/></svg>
+        <span id="xp">0 XP</span>
+      </div>
+      <div class="stat streak-stat" title="Current correct-answer streak">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M13 2s1 4-2 7c-2-3-5-1-5 3a6 6 0 0012 0c0-3-2-6-5-10z"/><path d="M10 17c0-2 2-3 2-5 2 2 3 3 2 5a2.2 2.2 0 01-4 0z"/></svg>
+        <span id="streak">0</span>
+      </div>
+      <div class="stat life-stat" title="Lives remaining">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M20.8 4.8a5.5 5.5 0 00-7.8 0L12 5.8l-1-1a5.5 5.5 0 00-7.8 7.8l1 1L12 21l7.8-7.4 1-1a5.5 5.5 0 000-7.8z"/></svg>
+        <span id="lives">3</span>
+      </div>
+      <button class="ghost-button hidden" id="exitBtn">Exit lesson</button>
+    </div>
+
+    <section id="homeView">
+      <div class="intro-grid">
+        <div>
+          <p class="eyebrow">The plainspoken leadership masterclass</p>
+          <h1>Say less.<br>Mean more.</h1>
+          <p class="lead">Go from translating buzzwords to controlling meetings, challenging fuzzy strategy, and writing updates executives can act on.</p>
+          <button class="primary" id="startBtn">Begin the masterclass</button>
+          <p class="intro-note">4 levels · 12 units · 60 real-world scenarios · 1 capstone</p>
+        </div>
+        <div class="phrase-stack" aria-label="Example jargon translation">
+          <div class="phrase-card" aria-hidden="true"><span class="label">Corporate</span><blockquote>“Let’s operationalize the learnings.”</blockquote></div>
+          <div class="phrase-card" aria-hidden="true"><span class="label">Corporate</span><blockquote>“We need to unlock the synergies.”</blockquote></div>
+          <div class="phrase-card">
+            <span class="label">Corporate</span>
+            <blockquote>“Let’s circle back and align on next steps.”</blockquote>
+            <div class="translation">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M5 12l4 4L19 6"/></svg>
+              <span>“We haven’t decided. Let’s schedule another meeting.”</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="path-section">
+        <div class="program-summary" aria-label="Masterclass overview">
+          <div class="summary-cell primary-cell"><strong>Zero fog.</strong><span>Learn to find the decision, owner, measure, and date hiding under the language.</span></div>
+          <div class="summary-cell"><strong>60</strong><span>decision-grade scenarios</span></div>
+          <div class="summary-cell"><strong>12</strong><span>progressive units</span></div>
+          <div class="summary-cell"><strong>4</strong><span>leadership skills</span></div>
+        </div>
+        <div class="mastery-panel" id="masteryPanel"></div>
+        <div class="section-head">
+          <h2>Your masterclass</h2>
+          <p>Each level builds on the one before it.</p>
+        </div>
+        <div id="homePath"></div>
+      </section>
+
+      <section class="reference-section" id="referenceSection">
+        <div class="section-head">
+          <div><h2>The field guide</h2><p style="margin-top:7px">A searchable translation desk for the phrases that eat your calendar.</p></div>
+          <button class="secondary" id="downloadGuideBtn">Download field guide</button>
+        </div>
+        <div class="reference-tools">
+          <div class="search-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+            <input class="search-input" id="termSearch" type="search" placeholder="Search a phrase, meaning, or better move" aria-label="Search the jargon field guide">
+          </div>
+          <div class="filters" id="termFilters" aria-label="Filter phrasebook"></div>
+        </div>
+        <div class="phrasebook" id="phrasebook"></div>
+      </section>
+    </section>
+
+    <section class="lesson-shell" id="lessonView" aria-live="polite">
+      <aside class="rail">
+        <div class="rail-title">Fluency path</div>
+        <div class="rail-list" id="railList"></div>
+      </aside>
+      <article class="lesson-card">
+        <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="lesson-inner" id="lessonInner"></div>
+      </article>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    (function(){
+      const levels = [
+        {title:"Decode the room", tagline:"Hear what the words actually commit to."},
+        {title:"Run the work", tagline:"Turn conversation into decisions and delivery."},
+        {title:"Influence with clarity", tagline:"Push back, persuade, and brief without the theater."},
+        {title:"Lead above the fog", tagline:"Test strategy, risk, and executive communication."}
+      ];
+
+      const lessons = [
+        {
+          level:0, title:"Buzzword basics", short:"Basics", descriptor:"Translate the phrase", skill:"decode",
+          questions:[
+            {type:"Plain English", prompt:"What does “Let’s take this offline” usually mean?", context:"You are in a meeting that is running long.", options:["Let’s disconnect from the internet","Let’s discuss this separately after the meeting","Let’s stop working on this","Let’s document it in a spreadsheet"], answer:1, why:"“Offline” means outside the current meeting, usually with fewer people."},
+            {type:"Plain English", prompt:"Translate “I’ll socialize the idea.”", context:"A teammate says this after you suggest a new process.", options:["I’ll post it on social media","I’ll test whether other people support it","I’ll announce that it is approved","I’ll ask marketing to name it"], answer:1, why:"To socialize an idea is to build support before a formal decision."},
+            {type:"Plain English", prompt:"What is “low-hanging fruit”?", context:"A leader wants an early win this quarter.", options:["The easiest useful thing to do first","A project with no measurable value","A task for a junior teammate","A goal that has already been missed"], answer:0, why:"It is the useful result that takes the least effort to reach."},
+            {type:"Plain English", prompt:"What does “Let’s not boil the ocean” warn against?", context:"The team is designing the first version of a new process.", options:["Working too slowly","Taking on too much scope at once","Using an outside vendor","Repeating an old idea"], answer:1, why:"The warning is about solving an impossibly broad problem instead of choosing a workable scope."},
+            {type:"Pressure check", prompt:"A sponsor says, “We need to unlock the synergies.” What is the best first question?", options:["Should we create a task force?","Which teams, assets, or results should combine, and what value should that create?","Can we schedule a workshop?","Who invented that phrase?"], answer:1, why:"Force the abstraction to name the parts and the expected value."}
+          ]
+        },
+        {
+          level:0, title:"Meaning & intent", short:"Intent", descriptor:"Find the real ask", skill:"decode",
+          questions:[
+            {type:"Intent check", prompt:"Your manager asks, “Are we aligned?” What are they really asking?", context:"The plan was just explained to the team.", options:["Did everyone hear me?","Do we agree on the goal, plan, and owner?","Do we all have the same calendar?","Can we end this meeting?"], answer:1, why:"Alignment is shared understanding plus agreement on what happens next."},
+            {type:"Intent check", prompt:"“Can you provide more color?” is a request for…", context:"Your update was technically correct but very brief.", options:["A polished slide deck","A visual brand refresh","Useful context, detail, or examples","A more optimistic answer"], answer:2, why:"“More color” asks for context that makes a thin answer easier to understand."},
+            {type:"Intent check", prompt:"A stakeholder asks for a “30,000-foot view.” What should you give them?", context:"You have ten minutes and forty slides.", options:["Every detail, delivered quickly","A high-level summary of the important parts","A list of technical questions","A confident answer with no evidence"], answer:1, why:"The phrase asks for the big picture, not implementation details."},
+            {type:"Intent check", prompt:"“Help me understand” can carry which useful signal?", context:"A senior leader says it after seeing your recommendation.", options:["They always agree","They need your logic, evidence, or assumptions made explicit","They want you to stop talking","They have approved the work"], answer:1, why:"Treat it as a request to expose the reasoning, not as automatic agreement or rejection."},
+            {type:"Pressure check", prompt:"“Let’s keep this on our radar” usually commits the team to what?", options:["A funded project","A decision next week","Nothing specific yet","A monthly report"], answer:2, why:"Without an owner, trigger, or date, the phrase records interest but not action."}
+          ]
+        },
+        {
+          level:0, title:"Memo decoder", short:"Memos", descriptor:"Read between the lines", skill:"decode",
+          questions:[
+            {type:"Memo decoder", prompt:"What is the clearest reading?", memo:"“We are rightsizing the organization to better meet evolving business needs.”", options:["The company is moving offices","The company is reducing or reshaping roles","The company is hiring every team","The company is changing its logo"], answer:1, why:"“Rightsizing” is often a softer way to describe headcount or role reductions."},
+            {type:"Memo decoder", prompt:"What commitment has actually been made?", memo:"“We’ll explore opportunities to leverage AI across the enterprise.”", options:["A funded program launches this month","Every employee gets a tool","The company intends to investigate possible uses","A specific team owns delivery"], answer:2, why:"“Explore opportunities” signals interest, but no owner, budget, or deadline."},
+            {type:"Memo decoder", prompt:"What is missing from this update?", memo:"“The initiative continues to gain momentum with key stakeholders.”", options:["A catchy project name","Evidence: a decision, result, owner, or date","A larger distribution list","More adjectives"], answer:1, why:"“Momentum” is hard to evaluate without a concrete decision, result, owner, or date."},
+            {type:"Memo decoder", prompt:"Which fact would best test this claim?", memo:"“Customer response has been overwhelmingly positive.”", options:["The launch announcement","A quote from the project lead","Response rate, sample size, and measured result","The number of slides presented"], answer:2, why:"Strong adjectives need a denominator, a measure, and enough context to judge the claim."},
+            {type:"Pressure check", prompt:"What should you ask after reading this?", memo:"“Following a successful pilot, we will consider broader adoption.”", options:["Was the pilot logo approved?","What defined success, what were the results, and who decides on adoption by when?","Can we celebrate now?","Should the pilot team write a newsletter?"], answer:1, why:"A pilot only teaches you something when success criteria, evidence, and the next decision are visible."}
+          ]
+        },
+        {
+          level:1, title:"Meeting control", short:"Meetings", descriptor:"Turn talk into movement", skill:"decisions",
+          questions:[
+            {type:"Best reply", prompt:"Someone says, “Let’s double-click on that.” What is the sharpest response?", context:"The discussion is drifting into a broad topic.", options:["Absolutely. I love double-clicking.","Which part should we examine more closely?","Let’s triple-click instead.","We can circle back later."], answer:1, why:"Ask which detail matters. It turns a vague invitation into a focused discussion."},
+            {type:"Best reply", prompt:"A meeting ends with, “We have some action items.” What should you ask?", context:"No one has named an owner or due date.", options:["Can we capture each owner and deadline before we leave?","Should we schedule another meeting?","Does everyone feel energized?","Can someone send the deck again?"], answer:0, why:"An action item is only real when it has an owner and a deadline."},
+            {type:"Best reply", prompt:"A leader asks you to “move the needle.” What is the useful follow-up?", context:"The target has not been defined.", options:["How far?","Which outcome and measure should change?","Should we build a dashboard?","Can we add more resources?"], answer:1, why:"Name the outcome and measure before choosing the work."},
+            {type:"Meeting move", prompt:"The group has debated for twenty minutes. What gets the meeting unstuck?", options:["Who has the strongest opinion?","What decision are we making, who makes it, and what information is still missing?","Should we add thirty minutes?","Can everyone restate their position?"], answer:1, why:"Return the room to the decision, decision owner, and the true gap."},
+            {type:"Pressure check", prompt:"A tangent matters, but not for today’s decision. What should the facilitator say?", options:["That is irrelevant.","Let’s capture it with an owner, then return to the decision we need today.","We’re out of time.","Let’s invite more people."], answer:1, why:"Acknowledge the issue, preserve it as owned work, and protect the meeting’s purpose."}
+          ]
+        },
+        {
+          level:1, title:"Owners & decisions", short:"Decisions", descriptor:"Make commitments real", skill:"decisions",
+          questions:[
+            {type:"Decision design", prompt:"Which line records a real decision?", options:["The group supported the direction.","We aligned on the path forward.","Maya approved option B for the November launch.","There was broad consensus."], answer:2, why:"A usable decision names who decided, what they chose, and the relevant timing."},
+            {type:"Decision design", prompt:"Which action item is complete enough to manage?", options:["Finance to review.","Follow up on pricing.","Dev sends the pricing model to Finance by Tuesday; Luis replies by Friday.","Circle back with the team."], answer:2, why:"Both handoff and response have owners and dates."},
+            {type:"Decision design", prompt:"Two leaders disagree and the team is stalled. What is missing?", options:["More enthusiasm","A defined decision owner or escalation path","A larger meeting","A new project name"], answer:1, why:"Consensus is not always possible. Teams need to know who decides when views differ."},
+            {type:"Decision design", prompt:"A choice was made, then reopened three days later. What should the team inspect?", options:["Whether the decision and reopen conditions were documented","Whether the deck used the right template","Whether everyone attended","Whether the room was too small"], answer:0, why:"Good decision records include the choice, rationale, owner, date, and what new evidence could reopen it."},
+            {type:"Pressure check", prompt:"Which question separates consultation from authority?", options:["Who wants to join?","Whose input is required, and who makes the final call?","Can we all agree?","Should we create a survey?"], answer:1, why:"Input and decision rights are different. Naming both prevents fake consensus and late vetoes."}
+          ]
+        },
+        {
+          level:1, title:"Status without fog", short:"Status", descriptor:"Report what changed", skill:"clarity",
+          questions:[
+            {type:"Human rewrite", prompt:"Choose the update that says something real.", options:["We continue to execute against the roadmap.","Workstreams are progressing at pace.","Ana finished the prototype; Finance reviews it Friday.","The team is leaning into delivery."], answer:2, why:"A useful update names the work, owner, and next date."},
+            {type:"Status check", prompt:"What belongs first in an executive status update?", options:["A full activity log","The decision or outcome that changed, followed by risk and next move","A list of everyone involved","The original project charter"], answer:1, why:"Lead with what changed and what the reader needs to know or do."},
+            {type:"Status check", prompt:"Which red status is most useful?", options:["Red due to dependencies.","At risk.","Launch is two weeks late because vendor data failed validation; Priya decides Friday whether to reduce scope.","Challenges remain."], answer:2, why:"The useful version names impact, cause, owner, next decision, and date."},
+            {type:"Status check", prompt:"The project is on schedule, but the result is weak. What should the update say?", options:["Green: all milestones complete.","On schedule, but adoption is 18% against a 40% target; interviews begin Monday.","Delivery remains strong.","No major blockers."], answer:1, why:"Delivery health and outcome health are not the same. Report both."},
+            {type:"Pressure check", prompt:"Which sentence belongs in the subject line?", context:"A sponsor must decide whether to delay launch.", options:["Project Phoenix weekly update","Update: several workstreams","Decision needed Friday: delay launch or remove reporting scope","Meeting notes and next steps"], answer:2, why:"Put the required action, deadline, and choice where the reader can see them immediately."}
+          ]
+        },
+        {
+          level:2, title:"Clean pushback", short:"Pushback", descriptor:"Challenge without drama", skill:"influence",
+          questions:[
+            {type:"Best reply", prompt:"A leader requests a two-week project by tomorrow. What is the strongest response?", options:["That’s impossible.","Sure, we’ll try.","By tomorrow we can deliver the decision summary; the full analysis needs two weeks. Which do you need?","Can we circle back?"], answer:2, why:"Good pushback makes the tradeoff concrete and offers a decision, not a complaint."},
+            {type:"Best reply", prompt:"A stakeholder adds scope without moving the date. What do you say?", options:["No problem.","We can add this by moving reporting to phase two or moving launch to the 18th. Which tradeoff should we take?","That was not in the brief.","I’ll ask the team to work harder."], answer:1, why:"Translate the request into visible scope, time, or resource tradeoffs."},
+            {type:"Best reply", prompt:"You disagree with a senior leader’s assumption. Where do you start?", options:["You’re wrong.","I may be missing context. The data I have points to a different assumption; can I walk you through it?","Everyone else agrees with me.","Let’s discuss offline."], answer:1, why:"State the gap directly while leaving room for context you may not have."},
+            {type:"Pushback", prompt:"Which response protects the team without hiding behind them?", options:["My team says no.","I won’t commit the team until we choose which current priority stops.","They are already overwhelmed.","That is above my pay grade."], answer:1, why:"Own the boundary and connect it to an explicit priority decision."},
+            {type:"Pressure check", prompt:"A sponsor says, “Just make it happen.” What is the next move?", options:["Accept silently.","Restate the outcome, expose the constraint, and ask the sponsor to choose the tradeoff they own.","Escalate immediately to HR.","Add more meetings."], answer:1, why:"Urgency does not erase constraints. Convert pressure into a sponsor-owned choice."}
+          ]
+        },
+        {
+          level:2, title:"Executive brevity", short:"Brevity", descriptor:"Lead with the point", skill:"clarity",
+          questions:[
+            {type:"Executive brief", prompt:"Which opening is strongest for a busy executive?", options:["As you know, the team has been working hard…","Decision needed by Thursday: fund the pilot or end it. We recommend funding it.","Please find attached our latest materials.","There are several items to discuss."], answer:1, why:"Lead with the decision, deadline, and recommendation."},
+            {type:"Executive brief", prompt:"What should follow a one-sentence recommendation?", options:["The full project history","Two or three reasons, the key risk, and the ask","A glossary","A list of meeting attendees"], answer:1, why:"Executives need enough evidence to judge the recommendation, not every step that produced it."},
+            {type:"Executive brief", prompt:"Choose the sharper metric sentence.", options:["Engagement improved significantly.","Weekly active use rose from 31% to 48% after onboarding changed.","Users loved the experience.","Adoption gained momentum."], answer:1, why:"A useful metric names the measure, baseline, result, and cause when known."},
+            {type:"Executive brief", prompt:"Which detail should move to an appendix?", options:["The requested decision","The recommendation","A table of all 47 interview comments","The largest unresolved risk"], answer:2, why:"Keep the main brief decision-grade. Deep evidence can remain available without blocking the point."},
+            {type:"Pressure check", prompt:"You have thirty seconds in an elevator. What structure holds?", options:["Background, history, method, conclusion","Outcome, evidence, ask","Team list, timeline, appendix","Vision, values, vocabulary"], answer:1, why:"Name what changed or should happen, give the proof, then make the ask."}
+          ]
+        },
+        {
+          level:2, title:"Change language", short:"Change", descriptor:"Make change concrete", skill:"influence",
+          questions:[
+            {type:"Change signal", prompt:"Which message respects the people doing the work?", options:["We need everyone to embrace the journey.","Starting May 6, support teams will use one intake queue; current open cases stay where they are.","Transformation is coming.","We must adopt a growth mindset."], answer:1, why:"People can act on a date, behavior, and transition rule."},
+            {type:"Change signal", prompt:"What question exposes whether training is the real solution?", options:["Can we make the slides more engaging?","Is the barrier knowledge, access, time, incentive, or workflow design?","Who can record a webinar?","Should attendance be mandatory?"], answer:1, why:"Training fixes a knowledge gap. It does not automatically fix permissions, priorities, incentives, or bad process."},
+            {type:"Change signal", prompt:"Which statement creates psychological safety without lowering the bar?", options:["Mistakes are fine.","Raise risks early; you will not be punished for surfacing a problem, but hiding one is unacceptable.","We are all learning together.","Failure is not an option."], answer:1, why:"The standard and the protected behavior are both explicit."},
+            {type:"Change signal", prompt:"Adoption is low. What should leaders ask before blaming resistance?", options:["Who is refusing to comply?","Does the new behavior make sense in the real workflow, and what friction have we created?","Should we send another reminder?","Can we add a leaderboard?"], answer:1, why:"Low adoption often reveals workflow friction, weak incentives, unclear value, or missing access."},
+            {type:"Pressure check", prompt:"Which launch message is complete?", options:["The new process goes live soon.","On June 1, sales submits requests in Portal X. Managers stop accepting email requests June 8. Help is available daily at 2.","We are excited to announce a transformation.","Please review the attached deck."], answer:1, why:"It names who changes what, when the old path closes, and where help lives."}
+          ]
+        },
+        {
+          level:3, title:"Strategy under pressure", short:"Strategy", descriptor:"Test the logic", skill:"decisions",
+          questions:[
+            {type:"Strategy test", prompt:"Which sentence is a strategy rather than a goal?", options:["Become the market leader.","Grow revenue 20%.","Win mid-market clinics by bundling setup and compliance support competitors charge for separately.","Deliver best-in-class experiences."], answer:2, why:"A strategy names where to play, how to win, and a distinct choice."},
+            {type:"Strategy test", prompt:"What is the fastest way to test “This is a top priority”?", options:["Count how often leaders say it.","Check whether time, money, decisions, and stopped work reflect it.","Add it to the town hall.","Create a slogan."], answer:1, why:"Priority is visible in allocation and tradeoffs, not repetition."},
+            {type:"Strategy test", prompt:"A plan lists twelve priorities. What is the most useful challenge?", options:["Can we color-code them?","What will we not do, and which three choices matter most?","Can every team own one?","Should we add a thirteenth?"], answer:1, why:"Strategy requires exclusion. If nothing loses, nothing is truly prioritized."},
+            {type:"Strategy test", prompt:"Which metric can become dangerous when used alone?", options:["Any metric detached from the outcome and behavior it is meant to represent","Only financial metrics","Only survey scores","Metrics are always objective"], answer:0, why:"People optimize what is measured. A proxy can distort behavior when it becomes the target."},
+            {type:"Pressure check", prompt:"A plan assumes customers will change behavior. What belongs in the strategy?", options:["A stronger adjective","The evidence for the behavior change and the test that could disprove it","A motivational quote","A larger launch event"], answer:1, why:"Critical assumptions should be explicit, testable, and tied to a response if they fail."}
+          ]
+        },
+        {
+          level:3, title:"Risk & bad news", short:"Risk", descriptor:"Make risk actionable", skill:"influence",
+          questions:[
+            {type:"Risk language", prompt:"Which risk statement can a leader act on?", options:["Vendor risk remains elevated.","If the vendor misses Friday’s file, launch slips two weeks; Omar will confirm by noon and recommend delay or reduced scope.","Dependencies are being monitored.","The team is cautiously optimistic."], answer:1, why:"A decision-grade risk names trigger, impact, owner, date, and response."},
+            {type:"Risk language", prompt:"You discover a material problem. What should happen first?", options:["Wait until you have a perfect solution.","Confirm the facts, notify the accountable leader promptly, and bring options with consequences.","Rewrite the status as yellow.","Tell the whole company."], answer:1, why:"Bad news should travel quickly to the people who own the consequence, with verified facts and choices."},
+            {type:"Risk language", prompt:"Which phrase hides the most dangerous uncertainty?", options:["We do not know yet; the test finishes Tuesday.","No major concerns at this time.","Two failures occurred in 500 tests.","The decision depends on Friday’s result."], answer:1, why:"“No major concerns” can hide an undefined threshold, incomplete evidence, or fear of escalation."},
+            {type:"Risk language", prompt:"A project is late because three teams missed handoffs. What is the system question?", options:["Who should be blamed?","Were owners, acceptance criteria, timing, and escalation rules clear at each handoff?","Should we add a daily meeting?","Which team worked hardest?"], answer:1, why:"Repeated misses often point to a broken coordination system, not three isolated character failures."},
+            {type:"Pressure check", prompt:"What is the right tone for delivering bad news?", options:["Vague and reassuring","Direct about facts and impact, calm about the response, honest about uncertainty","Dramatic enough to create urgency","Optimistic until a solution is complete"], answer:1, why:"Clarity builds trust: facts, impact, uncertainty, options, and the next checkpoint."}
+          ]
+        },
+        {
+          level:3, title:"Boardroom capstone", short:"Capstone", descriptor:"Lead the whole room", skill:"clarity", capstone:true,
+          questions:[
+            {type:"Capstone 1 of 5", prompt:"The CEO asks whether a pilot should scale. Which opening is strongest?", memo:"Pilot adoption reached 44% against a 60% target. Active users saved 32 minutes weekly. Accuracy failed the legal threshold in one workflow.", options:["The pilot generated many valuable learnings.","Do not scale yet. Fix the legal-risk workflow, then retest for four weeks; the time-saving signal is promising but adoption missed target.","The team worked hard and users were engaged.","Scale to build momentum."], answer:1, why:"It gives the recommendation, reason, evidence, risk, and next test without hiding the mixed result."},
+            {type:"Capstone 2 of 5", prompt:"A director says adoption is “basically on track.” What is your best response?", options:["Great.","What target and date define on track? We are at 44% against 60%, so I want to understand the basis for that call.","That is misleading.","Let’s take it offline."], answer:1, why:"Challenge the claim with the shared measure and invite the underlying reasoning."},
+            {type:"Capstone 3 of 5", prompt:"The board wants faster rollout despite the legal issue. Frame the choice.", options:["We need more alignment.","Option A delays four weeks to remediate and retest. Option B scales only the two cleared workflows now. Full rollout carries an unbounded legal risk and is not recommended.","The team will do its best.","Legal is blocking innovation."], answer:1, why:"Name viable options, timing, constraint, and recommendation. Do not turn risk owners into villains."},
+            {type:"Capstone 4 of 5", prompt:"Which owner-and-date close is strongest?", options:["We will continue to monitor progress.","Nia owns remediation by May 12; Legal retests May 15; I return May 16 with the scale recommendation.","Next steps will follow.","The working team will circle back."], answer:1, why:"The sequence is owned, dated, and ends in the actual decision."},
+            {type:"Capstone 5 of 5", prompt:"Write the headline the board minutes should capture.", options:["Robust discussion on AI opportunities","Board aligned on continued exploration","Full rollout paused; two cleared workflows may scale while legal-risk workflow is remediated and retested by May 15","Pilot update presented"], answer:2, why:"A strong record captures the decision, scope, condition, and next date."}
+          ]
+        }
+      ];
+
+      const terms = [
+        {term:"Action item", cat:"Meetings", meaning:"A task created by a discussion.", better:"Name the owner, deliverable, and deadline."},
+        {term:"Align", cat:"Meetings", meaning:"Reach a shared understanding or agreement.", better:"Say what must be agreed: goal, choice, owner, or plan."},
+        {term:"Bandwidth", cat:"Work", meaning:"Available time or capacity.", better:"Name the constraint: hours, skills, or competing priority."},
+        {term:"Best in class", cat:"Strategy", meaning:"Claim of superior quality, usually without a standard.", better:"Name the benchmark and the metric that proves it."},
+        {term:"Boil the ocean", cat:"Work", meaning:"Attempt an impossibly broad scope.", better:"Define the first useful slice and what is out."},
+        {term:"Circle back", cat:"Meetings", meaning:"Return to the topic later.", better:"Set the person, date, and decision needed."},
+        {term:"Deep dive", cat:"Meetings", meaning:"Detailed examination of a topic.", better:"Name the question the detail must answer."},
+        {term:"Double-click", cat:"Meetings", meaning:"Examine one part more closely.", better:"Ask which part and why it matters."},
+        {term:"Drive impact", cat:"Strategy", meaning:"Create a meaningful result.", better:"Name the outcome, measure, baseline, and target."},
+        {term:"Executive presence", cat:"Leadership", meaning:"A broad judgment about confidence, clarity, and credibility.", better:"Ask which observable behavior needs to change."},
+        {term:"Ideate", cat:"Work", meaning:"Generate ideas.", better:"State the problem, constraints, and choice the ideas support."},
+        {term:"Lean in", cat:"Leadership", meaning:"Show more effort, attention, or support.", better:"Name the behavior: decide, sponsor, review, or deliver."},
+        {term:"Leverage", cat:"Work", meaning:"Use something to gain an advantage.", better:"Say use, then name the thing and result."},
+        {term:"Low-hanging fruit", cat:"Strategy", meaning:"The easiest useful win.", better:"Name the effort, value, and why it comes first."},
+        {term:"Move the needle", cat:"Strategy", meaning:"Cause a noticeable change.", better:"Name which measure, from what baseline, by how much."},
+        {term:"North star", cat:"Strategy", meaning:"The guiding outcome or measure.", better:"Define the choice it helps teams make."},
+        {term:"Offline", cat:"Meetings", meaning:"Outside the current meeting.", better:"Name who needs to meet and the date."},
+        {term:"On the radar", cat:"Work", meaning:"Known or being watched, without a commitment.", better:"Add a trigger, owner, or review date."},
+        {term:"Operationalize", cat:"Work", meaning:"Turn an idea into repeatable work.", better:"Name the process, owner, input, output, and start date."},
+        {term:"Right-size", cat:"Leadership", meaning:"Adjust size or staffing; often reduce roles.", better:"State the actual role, cost, or capacity change."},
+        {term:"Roadmap", cat:"Strategy", meaning:"A sequence of intended work and decisions.", better:"Show priorities, assumptions, owners, and change rules."},
+        {term:"Socialize", cat:"Leadership", meaning:"Build support before a formal decision.", better:"Name whose input or approval is needed."},
+        {term:"Strategic", cat:"Strategy", meaning:"Important to long-term choices or advantage.", better:"State the choice, advantage, and what will not be done."},
+        {term:"Synergy", cat:"Strategy", meaning:"Extra value created by combining things.", better:"Name what combines, the value, and how it will be measured."},
+        {term:"Take it to the next level", cat:"Leadership", meaning:"Improve it in an unspecified way.", better:"Name the new standard, audience, or result."},
+        {term:"Thought leadership", cat:"Leadership", meaning:"Ideas intended to shape how others think.", better:"Name the audience, distinct insight, and evidence."},
+        {term:"Transform", cat:"Strategy", meaning:"Change materially, often across process, technology, and behavior.", better:"Specify what becomes different for whom and by when."},
+        {term:"Value add", cat:"Strategy", meaning:"An additional useful benefit.", better:"Name the beneficiary and measurable gain."},
+        {term:"Workstream", cat:"Work", meaning:"A related body of work within a larger effort.", better:"Name its outcome, owner, dependencies, and finish condition."},
+        {term:"Ways of working", cat:"Work", meaning:"How a group coordinates and makes decisions.", better:"Name the rituals, rights, handoffs, and standards changing."}
+      ];
+
+      let state={xp:0,lives:3,unlocked:0,complete:[],lesson:0,q:0,correct:0,answered:false,streak:0,bestStreak:0,attempts:0,totalCorrect:0,skills:{decode:{a:0,c:0},clarity:{a:0,c:0},decisions:{a:0,c:0},influence:{a:0,c:0}}};
+      let activeCategory="All";
+      const el=id=>document.getElementById(id);
+      const homeView=el("homeView"), lessonView=el("lessonView"), lessonInner=el("lessonInner");
+      const skillNames={decode:"Decode",clarity:"Clarity",decisions:"Decisions",influence:"Influence"};
+
+      function icon(name){
+        const paths={check:'<path d="M5 12l4 4L19 6"/>',x:'<path d="M6 6l12 12M18 6L6 18"/>',lock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/>',flag:'<path d="M5 21V4m0 1h11l-2 4 2 4H5"/>'};
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">'+paths[name]+'</svg>';
+      }
+
+      function renderStats(){
+        el("xp").textContent=state.xp+" XP";
+        el("lives").textContent=state.lives;
+        el("streak").textContent=state.streak;
+      }
+
+      function renderMastery(){
+        const panel=el("masteryPanel");
+        if(!state.attempts){panel.classList.remove("visible");panel.innerHTML="";return;}
+        const accuracy=Math.round(state.totalCorrect/state.attempts*100);
+        const bars=Object.keys(skillNames).map(key=>{
+          const s=state.skills[key];
+          const value=s.a?Math.round(s.c/s.a*100):0;
+          return '<div class="skill-row"><span>'+skillNames[key]+'</span><div class="skill-track"><div class="skill-fill" style="width:'+value+'%"></div></div><span class="skill-value">'+value+'%</span></div>';
+        }).join("");
+        panel.innerHTML='<div class="mastery-score"><div class="score-ring">'+accuracy+'%</div><div><strong>Session profile</strong><span>'+state.attempts+' scenarios · best streak '+state.bestStreak+'</span></div></div><div class="skill-bars">'+bars+'</div>';
+        panel.classList.add("visible");
+      }
+
+      function renderPaths(){
+        el("homePath").innerHTML=levels.map((level,levelIndex)=>{
+          const indices=lessons.map((l,i)=>l.level===levelIndex?i:-1).filter(i=>i>=0);
+          const done=indices.filter(i=>state.complete.includes(i)).length;
+          const cards=indices.map(i=>{
+            const l=lessons[i];
+            const complete=state.complete.includes(i), active=i===state.unlocked, locked=i>state.unlocked;
+            const status=complete?"complete":active?"active":"locked";
+            const statusText=complete?"Complete":active?"Ready":"Locked";
+            const mark=complete?icon("check"):locked?icon("lock"):l.capstone?icon("flag"):(i+1);
+            return '<button class="unit-card '+status+'" data-lesson="'+i+'" '+(locked?'disabled':'')+'><div class="unit-top"><span>Unit '+(i+1)+'</span><span class="unit-icon">'+mark+'</span></div><h4>'+l.title+'</h4><p>'+l.descriptor+'</p><div class="unit-foot">'+statusText+' · 5 scenarios</div></button>';
+          }).join("");
+          return '<section class="level-group"><div class="level-head"><div class="level-number">'+(levelIndex+1)+'</div><div><h3>'+level.title+'</h3><p>'+level.tagline+'</p></div><div class="level-progress">'+done+' / '+indices.length+' complete</div></div><div class="unit-grid">'+cards+'</div></section>';
+        }).join("");
+        el("homePath").querySelectorAll(".unit-card:not(:disabled)").forEach(btn=>btn.addEventListener("click",()=>startLesson(Number(btn.dataset.lesson))));
+        el("railList").innerHTML=lessons.map((l,i)=>{
+          const status=state.complete.includes(i)?"done":i===state.lesson?"current":i>state.unlocked?"locked":"";
+          return '<div class="rail-item '+status+'"><span class="mini-node">'+(state.complete.includes(i)?icon("check"):(i+1))+'</span><span>'+l.short+'</span></div>';
+        }).join("");
+        renderMastery();
+      }
+
+      function startLesson(index){
+        state.lesson=index;state.q=0;state.correct=0;state.answered=false;state.lives=3;state.streak=0;
+        homeView.classList.add("hidden");lessonView.classList.add("visible");el("exitBtn").classList.remove("hidden");
+        renderStats();renderPaths();renderQuestion();window.scrollTo({top:0,behavior:"smooth"});
+      }
+
+      function renderQuestion(){
+        const lesson=lessons[state.lesson], q=lesson.questions[state.q];
+        el("progressBar").style.width=(state.q/lesson.questions.length*100)+"%";
+        lessonInner.className="lesson-inner";
+        lessonInner.innerHTML=
+          '<div class="question-meta"><span class="question-tag">Level '+(lesson.level+1)+' · '+lesson.title+'</span><span>'+(state.q+1)+' of '+lesson.questions.length+'</span></div>'+ 
+          '<h2 class="question-title">'+q.prompt+'</h2>'+ 
+          (q.context?'<p class="question-context">'+q.context+'</p>':"")+
+          (q.memo?'<div class="memo">'+q.memo+'</div>':"")+
+          '<div class="options" role="group" aria-label="Answer choices">'+q.options.map((o,i)=>'<button class="option" data-index="'+i+'"><span class="option-key">'+String.fromCharCode(65+i)+'</span><span>'+o+'</span></button>').join("")+'</div>'+ 
+          '<div class="feedback" id="feedback"><div class="feedback-icon" id="feedbackIcon"></div><div class="feedback-copy"><strong id="feedbackTitle"></strong><span id="feedbackText"></span></div><button class="primary continue" id="continueBtn">Continue</button></div>';
+        lessonInner.querySelectorAll(".option").forEach(btn=>btn.addEventListener("click",()=>answer(Number(btn.dataset.index))));
+      }
+
+      function answer(index){
+        if(state.answered)return;
+        state.answered=true;
+        const lesson=lessons[state.lesson], q=lesson.questions[state.q];
+        const buttons=[...lessonInner.querySelectorAll(".option")];
+        buttons.forEach((b,i)=>{b.disabled=true;if(i===q.answer)b.classList.add("correct");});
+        const good=index===q.answer;
+        state.attempts++;state.skills[lesson.skill].a++;
+        if(good){
+          state.totalCorrect++;state.skills[lesson.skill].c++;state.correct++;state.streak++;state.bestStreak=Math.max(state.bestStreak,state.streak);
+          const bonus=state.streak>0&&state.streak%3===0?5:0;state.xp+=10+bonus;showToast(bonus?"+15 XP · streak bonus":"+10 XP");
+        } else {
+          state.lives=Math.max(0,state.lives-1);state.streak=0;buttons[index].classList.add("wrong");
+        }
+        renderStats();
+        const feedback=el("feedback");feedback.classList.add("visible");
+        el("feedbackIcon").innerHTML=icon(good?"check":"x");
+        el("feedbackIcon").classList.toggle("bad",!good);
+        el("feedbackTitle").textContent=good?(state.streak>=3?"Sharp. "+state.streak+" in a row.":"Exactly."):"Not quite.";
+        el("feedbackText").textContent=q.why;
+        el("continueBtn").addEventListener("click",nextQuestion,{once:true});
+      }
+
+      function nextQuestion(){
+        const total=lessons[state.lesson].questions.length;
+        if(state.q<total-1){state.q++;state.answered=false;renderQuestion();}
+        else{finishLesson();}
+      }
+
+      function finishLesson(){
+        el("progressBar").style.width="100%";
+        if(!state.complete.includes(state.lesson))state.complete.push(state.lesson);
+        const gained=state.correct*10;
+        const accuracy=Math.round(state.correct/lessons[state.lesson].questions.length*100);
+        const final=state.lesson===lessons.length-1;
+        if(!final)state.unlocked=Math.max(state.unlocked,state.lesson+1);
+        renderPaths();
+        lessonInner.className="lesson-inner result";
+        const verdict=accuracy===100?"Clean sweep.":accuracy>=80?"Decision-grade.":accuracy>=60?"You’re cutting through.":"Run it again and sharpen the move.";
+        const finalTitle=state.totalCorrect/state.attempts>=.9?"Plainspoken strategist":state.totalCorrect/state.attempts>=.75?"Clarity operator":"Fog cutter in training";
+        lessonInner.innerHTML='<div class="result-badge">'+accuracy+'%</div><h2>'+(final?finalTitle:verdict)+'</h2><p>'+(final?'You finished the full masterclass. You can decode the language, surface the tradeoff, and move a room toward a real decision.':'You completed '+lessons[state.lesson].title.toLowerCase()+'. '+(final?'':"The next unit is ready."))+'</p><div class="result-stats"><div class="result-stat"><strong>'+gained+'+</strong><span>base XP</span></div><div class="result-stat"><strong>'+state.correct+'/5</strong><span>correct</span></div><div class="result-stat"><strong>'+state.bestStreak+'</strong><span>best streak</span></div></div><div class="result-actions">'+(final?'<button class="primary" id="homeResultBtn">See mastery profile</button><button class="secondary" id="downloadResultBtn">Download field guide</button>':'<button class="primary" id="nextLessonBtn">Start next unit</button><button class="secondary" id="homeResultBtn">Back to masterclass</button>')+'</div>';
+        if(final){
+          el("homeResultBtn").addEventListener("click",goHome);
+          el("downloadResultBtn").addEventListener("click",downloadGuide);
+        }else{
+          el("nextLessonBtn").addEventListener("click",()=>startLesson(state.lesson+1));
+          el("homeResultBtn").addEventListener("click",goHome);
+        }
+      }
+
+      function goHome(){
+        lessonView.classList.remove("visible");homeView.classList.remove("hidden");el("exitBtn").classList.add("hidden");
+        renderPaths();window.scrollTo({top:0,behavior:"smooth"});
+        el("startBtn").textContent=state.complete.length?(state.complete.length===lessons.length?"Replay the capstone":"Continue the masterclass"):"Begin the masterclass";
+      }
+
+      function renderTerms(){
+        const query=el("termSearch").value.trim().toLowerCase();
+        const filtered=terms.filter(t=>(activeCategory==="All"||t.cat===activeCategory)&&(!query||(t.term+" "+t.meaning+" "+t.better).toLowerCase().includes(query)));
+        el("phrasebook").innerHTML=filtered.length?filtered.map(t=>'<article class="term-card"><h4>'+t.term+'</h4><p>'+t.meaning+'</p><p class="better"><strong>Sharper move:</strong> '+t.better+'</p></article>').join(""):'<p class="empty-terms">No phrase matches that search.</p>';
+      }
+
+      function setupTerms(){
+        const categories=["All",...new Set(terms.map(t=>t.cat))];
+        el("termFilters").innerHTML=categories.map(cat=>'<button class="filter '+(cat==="All"?"active":"")+'" data-cat="'+cat+'">'+cat+'</button>').join("");
+        el("termFilters").querySelectorAll(".filter").forEach(btn=>btn.addEventListener("click",()=>{
+          activeCategory=btn.dataset.cat;el("termFilters").querySelectorAll(".filter").forEach(b=>b.classList.toggle("active",b===btn));renderTerms();
+        }));
+        el("termSearch").addEventListener("input",renderTerms);renderTerms();
+      }
+
+      function downloadGuide(){
+        const lines=["THE PLAINSPOKEN FIELD GUIDE","","Four questions for any fuzzy message:","1. What decision or outcome is needed?","2. Who owns it?","3. How will we measure it?","4. By when?","","PHRASE TRANSLATIONS",""];
+        terms.forEach(t=>{lines.push(t.term.toUpperCase());lines.push(t.meaning);lines.push("Sharper move: "+t.better);lines.push("");});
+        const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
+        const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="plainspoken-field-guide.txt";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);showToast("Field guide downloaded");
+      }
+
+      function showToast(msg){const t=el("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1100);}
+      el("startBtn").addEventListener("click",()=>startLesson(state.complete.length===lessons.length?lessons.length-1:state.unlocked));
+      el("exitBtn").addEventListener("click",goHome);
+      el("downloadGuideBtn").addEventListener("click",downloadGuide);
+      document.addEventListener("keydown",event=>{
+        if(!lessonView.classList.contains("visible"))return;
+        if(!state.answered&&["1","2","3","4"].includes(event.key)){
+          const btn=lessonInner.querySelector('.option[data-index="'+(Number(event.key)-1)+'"]');if(btn)btn.click();
+        }else if(state.answered&&event.key==="Enter"){
+          const btn=el("continueBtn");if(btn)btn.click();
+        }
+      });
+      setupTerms();renderStats();renderPaths();
+    })();
+  </script>
+</body>
+</html>
